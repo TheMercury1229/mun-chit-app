@@ -1,9 +1,15 @@
 import express from "express";
+import { protectRoute } from "../middleware/protectRouteMiddleware.js";
+import {
+  getMessages,
+  getUserForSidebar,
+  sendMessage,
+} from "../controllers/messageController.js";
 
 const messageRouter = express.Router();
 
-messageRouter.get("/", (req, res) => {
-  res.send("Hello World!");
-});
+messageRouter.get("/conversations", protectRoute, getUserForSidebar);
+messageRouter.get("/:id", protectRoute, getMessages);
+messageRouter.post("/send/:id", protectRoute, sendMessage);
 
 export default messageRouter;

@@ -28,23 +28,29 @@ model Conversation {
   participantIds String[]
   participants   User[]    @relation("UserConversations")
   messages       Message[]
-  isViaEB        Boolean   @default(false) // To mark if the conversation is routed through EB
 }
 
 model Message {
-  id             String       @id @default(cuid())
+  id             String        @id @default(cuid())
   body           String
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
   senderId       String
-  sender         User         @relation(fields: [senderId], references: [id])
-  conversation   Conversation @relation(fields: [conversationId], references: [id])
+  sender         User          @relation(fields: [senderId], references: [id])
+  conversation   Conversation  @relation(fields: [conversationId], references: [id])
   conversationId String
-  isApproved     Boolean      @default(false) // Indicates EB approval status
+  isViaEB        Boolean       @default(false) // Indicates if the message is routed through EB
+  status         MessageStatus @default(PENDING)
 }
 
 enum Role {
   DELEGATE
   EB
   ADMIN
+}
+
+enum MessageStatus {
+  PENDING
+  APPROVED
+  REJECTED
 }
