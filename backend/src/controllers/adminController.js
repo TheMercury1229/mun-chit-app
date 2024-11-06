@@ -46,3 +46,34 @@ export const signup = async (req, res) => {
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
+export const updateMessageStatus = async (req, res) => {
+  const { id: messageId } = req.params;
+  const { status } = req.body;
+  const statusArray = ["APPROVED", "REJECTED", "PENDING"];
+  if (!statusArray.includes(status)) {
+    return res.status(400).json({ message: "Invalid status" });
+  }
+  try {
+    const updatedMessage = await prisma.message.update({
+      where: { id: messageId, isViaEB: true },
+      data: { status },
+    });
+    res.status(200).json(updatedMessage);
+  } catch (error) {
+    console.error("Error in updateMessageStatus:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const getAllMessages = async (req, res) => {
+  try {
+    const pendingMessages = await prisma.message.findMany({
+      where: { isViaEB: true },
+    });
+    res.status(200).json(pendingMessages);
+  } catch (error) {
+    console.error("Error in getPendingMessages:", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
